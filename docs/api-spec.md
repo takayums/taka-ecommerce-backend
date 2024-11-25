@@ -14,6 +14,13 @@
     - [POST Product](#post-product)
     - [Update Product](#update-product)
     - [Delete Product](#delete-product)
+  - [Orders](#orders)
+    - [GET Orders](#get-orders)
+    - [POST Orders](#post-orders)
+  - [Cart](#cart)
+    - [GET Carts](#get-carts)
+    - [Create Carts](#create-carts)
+    - [Delete Carts](#delete-carts)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -138,7 +145,7 @@ Response Body:
   {dll}
 }
 ```
-Response Body Failed: 
+Response Body Failed:
 ```json
 {
   "message": "Unautorized, ..."
@@ -279,7 +286,7 @@ Endpoint: DELETE /products/:id
 
 Headers: Authorization Bearer token
 
-Response: 
+Response Body:
 ```json
 {
   "message": "Product Removed Succesfully"
@@ -290,5 +297,152 @@ Response Failed:
 ```json
 {
   "message": "Product Not Found"
+}
+```
+
+## Orders
+
+### GET Orders
+
+Deskripsi: Mendapatkan Semua Orders
+
+Endpoint: GET /orders
+
+Headers: Authorization Bearer Token
+
+Response Body:
+```json
+{
+  [
+    {
+      "id": "uuid",
+      "userId": "uuid",
+      "totalPrice": 200.0,
+      "status": "PENDING",
+      "createAt": "2024-01-01T00:00:00Z",
+
+    }
+  ]
+}
+```
+
+Response Failde:
+```json
+{
+  "message": "Failed Orders"
+}
+```
+
+### POST Orders
+
+Deskripsi: Membuat Orders
+
+Endpoint: POST /orders
+
+Headers: Authorization Bearer Token
+
+Request Body:
+```json
+{
+  "items": [
+    {
+      "productid": "uuid",
+      "quantity": 12,
+    }
+  ]
+  "totalPrice": 200.0,
+}
+```
+
+Response Body: 
+```json
+{
+  "message": "Order created successfully",
+  "order": {
+    "id": "uuid",
+    "userId": "uuid",
+    "totalPrice": 200.0,
+    "status": "PENDING"
+  }
+}
+```
+
+Response Failed:
+```json
+{
+  "message": "Orders Create Failed"
+}
+```
+
+## Cart
+
+### GET Carts
+
+Deskripsi: Mendapatkan Keranjang
+
+Endpoint: GET /carts
+
+Headers: Authorization Bearer Token
+
+Response Body:
+```json
+{
+  [
+    {
+      "productId": "uuid",
+      "quantity": 2,
+      "price": 100.0
+    }
+  ]
+}
+```
+
+Response Failed:
+```json
+{
+  "message": "Failed Get Carts"
+}
+```
+
+### Create Carts
+
+Deskripsi: Menambahkan Keranjang
+
+Endpoint: POST /carts
+
+Headers: Authorization Bearer Token
+
+Request Body:
+```json
+{
+  "productId": "uuid",
+  "quantity": 3
+}
+```
+Response Body:
+```json
+{
+  "message": "Product Added to Cart"
+}
+```
+Response Failed:
+```json
+{
+  "message": "Failed Add to Cart"
+}
+```
+
+### Delete Carts
+
+Deskripsi: Menghapus product dari Keranjang
+
+Endpoint: DELETE /cart/:productId
+
+Headers: Authorization Bearer Token
+
+Response Body:
+```json
+{
+  "message": "Product Removed From Cart"
 }
 ```
