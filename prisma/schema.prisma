@@ -13,12 +13,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELED
+}
+
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @db.VarChar(100)
-  name     String  @db.VarChar(100)
-  password String  @db.VarChar(100)
-  token    String? @db.VarChar(100)
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.VarChar(100)
+  name     String   @db.VarChar(100)
+  password String   @db.VarChar(100)
+  role     Role     @default(USER)
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  token    String?  @db.VarChar(100)
+
+  order Order[]
+  cart  Cart?
 
   @@map("users")
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  categoryId  Int
+  name        String      @db.VarChar(100)
+  description String      @db.VarChar(100)
+  price       Decimal
+  stock       Int
+  images      Json
+  createAt    DateTime    @default(now())
+  updateAt    DateTime    @updatedAt
+  cartitems   CartItem[]
+  orderitems  OrderItem[]
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("products")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @db.VarChar(100)
+  createAt DateTime  @default(now())
+  updateAt DateTime  @updatedAt
+  product  Product[]
+
+  @@map("categories")
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+
+  userId     Int
+
+  totalPrice Decimal
+  status     Status
+  createAt   DateTime    @default(now())
+  updateAt   DateTime    @updatedAt
+  orderitems      OrderItem[]
+
+  user       User        @relation(fields: [userId], references: [id])
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId Int
+
+  quantity  Int
+  price     Decimal
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("orderitem")
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  
+  userId    Int        @unique
+
+  createAt  DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  cartitems CartItem[]
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  cartId    Int
+  productId Int
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+  
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("cartitem")
 }

@@ -4,6 +4,9 @@ CREATE TABLE `users` (
     `username` VARCHAR(100) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `password` VARCHAR(100) NOT NULL,
+    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
     `token` VARCHAR(100) NULL,
 
     PRIMARY KEY (`id`)
