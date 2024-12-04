@@ -8,6 +8,7 @@
   - [Orders](#orders)
   - [Orders Items](#orders-items)
   - [Carts](#carts)
+  - [Carts Items](#carts-items)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -22,6 +23,7 @@
 - role (enum: USER, ADMIN)
 - createdAt (datetime)
 - updatedAt (datetime)
+- token (string)
 
 ## Products
 
@@ -31,7 +33,7 @@
 - price (float)
 - stock (integer)
 - categoryId (foreign key)
-- images (array of URLs atau tabel terpisah untuk gambar)
+- images (Json of URLs atau tabel terpisah untuk gambar)
 - createdAt (datetime)
 - updatedAt (datetime)
 
@@ -55,14 +57,25 @@
 
 - id (UUID)
 - orderId (foreign key)
+- userId (foreign key)
 - productId (foreign key)
 - quantity (integer)
 - price (float)
+- createdAt (datetime)
+- updatedAt (datetime)
 
 ## Carts
 
 - id (UUID)
 - userId (foreign key)
-- productId (foreign key)
 - quantity (integer)
 - createdAt (datetime)
+- updatedAt (datetime)
+
+## Carts Items
+- id (UUID)
+- cartId (foreign key)
+- productId (foreign key)
+- quantity (Int)
+- createdAt (datetime)
+- updatedAt (datetime)
