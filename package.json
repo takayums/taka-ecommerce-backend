@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "tsc && nodemon ./dist/main.js"
+    "dev": "nodemon"
   },
   "jest": {
     "transform": {
