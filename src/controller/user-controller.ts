@@ -1,6 +1,8 @@
 import { Response, Request, NextFunction } from "express";
-import { CreateUserRequest, LoginRequest } from "../model/user-model";
-import { UserService } from "../service/user-service";
+
+import { CreateUserRequest, LoginRequest } from "@/model/user-model";
+
+import { UserService } from "@/service/user-service";
 
 export class User {
   static async Register(req: Request, res: Response, next: NextFunction) {

@@ -22,7 +22,16 @@ if (process.env.NODE_ENV !== "production") {
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple(),
+        winston.format.printf(({ timestamp, level, message, ...meta }) => {
+          // Jika message adalah objek, ubah ke JSON string
+          const msg =
+            typeof message === "object" ? JSON.stringify(message) : message;
+          // Jika ada metadata lain tampilkan juga
+          const metaString = Object.keys(meta).length
+            ? JSON.stringify(meta)
+            : "";
+          return `${timestamp} ${level}: ${msg} ${metaString}`;
+        }),
       ),
     }),
   );

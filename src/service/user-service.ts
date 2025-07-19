@@ -1,13 +1,16 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prismaClient } from "../application/database";
-import { logger } from "../application/logging";
-import { ResponseError } from "../error/response-error";
+
+import { prismaClient } from "@/application/database";
+import { logger } from "@/application/logging";
+
 import {
   CreateUserRequest,
   LoginRequest,
   responseUser,
-} from "../model/user-model";
+} from "@/model/user-model";
+
+import { ResponseError } from "@/error/response-error";
 
 export class UserService {
   static async RegisterService(request: CreateUserRequest) {
