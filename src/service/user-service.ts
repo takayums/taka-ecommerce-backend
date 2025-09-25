@@ -8,12 +8,26 @@ import {
   CreateUserRequest,
   LoginRequest,
   responseUser,
+  UpdateUserRequest,
 } from "@/model/user-model";
 
 import { ResponseError } from "@/error/response-error";
+import { Validation } from "@/validation/validation";
+import {
+  TypeLoginUserRequest,
+  TypeRegisterUserRequest,
+  UserValidation,
+  TypeUpdateUserRequest,
+} from "@/validation/user-validation";
+import { User } from "@prisma/client";
 
 export class UserService {
+  // Register Service
   static async RegisterService(request: CreateUserRequest) {
+    const registerRequest: TypeRegisterUserRequest = Validation.validate(
+      UserValidation.REGISTER,
+      request
+    );
     const existingUser = await prismaClient.user.count({
       where: {
         email: request.email,
@@ -22,26 +36,31 @@ export class UserService {
 
     if (existingUser == 1) {
       logger.warn(
-        `Registration failed: Email already is use - ${request.email}`,
+        `Registration failed: Email already is use - ${request.email}`
       );
       throw new ResponseError("User is already", 401);
     }
 
-    request.password = await bcrypt.hash(request.password, 10);
+    registerRequest.password = await bcrypt.hash(registerRequest.password, 10);
 
     const user = await prismaClient.user.create({
-      data: request,
+      data: registerRequest,
     });
 
     const data = responseUser(user);
     return data;
   }
 
+  // Login Service
   static async LoginService(request: LoginRequest) {
+    const loginRequest: TypeLoginUserRequest = Validation.validate(
+      UserValidation.LOGIN,
+      request
+    );
     const jwtSecretKey: string = process.env.SECRETE_KEY as string;
     let user = await prismaClient.user.findUnique({
       where: {
-        email: request.email,
+        email: loginRequest.email,
       },
     });
 
@@ -50,8 +69,8 @@ export class UserService {
     }
 
     const passwordMatched = await bcrypt.compare(
-      request.password,
-      user!.password,
+      loginRequest.password,
+      user!.password
     );
 
     if (!passwordMatched) {
@@ -63,7 +82,7 @@ export class UserService {
     });
 
     user = await prismaClient.user.update({
-      where: { email: request.email },
+      where: { email: loginRequest.email },
       data: {
         token: token,
       },
@@ -72,5 +91,48 @@ export class UserService {
     const data = responseUser(user);
     data.token = user.token!;
     return data;
+  }
+
+  // Get Service
+  static async Get(user: User) {
+    return responseUser(user);
+  }
+  // Update Service
+  static async Update(user: User, request: UpdateUserRequest) {
+    const updateRequest: UpdateUserRequest = Validation.validate(
+      UserValidation.UPDATE,
+      request
+    );
+
+    if (updateRequest.name) {
+      user.name = updateRequest.name;
+    }
+
+    if (updateRequest.password) {
+      user.password = await bcrypt.hash(updateRequest.password, 10);
+    }
+
+    const result = await prismaClient.user.update({
+      where: {
+        email: user.email,
+      },
+      data: user,
+    });
+    return responseUser(result);
+  }
+
+  // Logout Service
+
+  static async Logout(user: User) {
+    const result = await prismaClient.user.update({
+      where: {
+        email: user.email,
+      },
+      data: {
+        token: null,
+      },
+    });
+
+    return responseUser(result);
   }
 }
