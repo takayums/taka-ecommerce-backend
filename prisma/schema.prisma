@@ -35,8 +35,8 @@ model User {
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   token    String?  @db.Text
-  order Order[]
-  cart  Cart?
+  order    Order[]
+  cart     Cart?
 
   @@map("users")
 }
@@ -49,6 +49,8 @@ model Product {
   price       Decimal
   stock       Int
   images      Json
+  size        String
+  quantity    Int
   createAt    DateTime    @default(now())
   updateAt    DateTime    @updatedAt
   cartitems   CartItem[]
@@ -70,41 +72,41 @@ model Category {
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  userId     Int
+  userId Int
 
   totalPrice Decimal
   status     Status
   createAt   DateTime    @default(now())
   updateAt   DateTime    @updatedAt
-  orderitems      OrderItem[]
+  orderitems OrderItem[]
 
-  user       User        @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   orderId   Int
   productId Int
 
-  quantity  Int
-  price     Decimal
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  quantity Int
+  price    Decimal
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 
-  order     Order    @relation(fields: [orderId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@map("orderitem")
 }
 
 model Cart {
-  id        Int        @id @default(autoincrement())
-  
-  userId    Int        @unique
+  id Int @id @default(autoincrement())
+
+  userId Int @unique
 
   createAt  DateTime   @default(now())
   updateAt  DateTime   @updatedAt
@@ -122,9 +124,9 @@ model CartItem {
   productId Int
   createAt  DateTime @default(now())
   updateAt  DateTime @updatedAt
-  
-  cart      Cart     @relation(fields: [cartId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@map("cartitem")
 }
